@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1517601523 source:/home/stierliz/Documents/UTM/UTM/Ciclul1/Semestru 2/MatSpeciale/Lab1/main.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
