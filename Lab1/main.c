@@ -2,12 +2,22 @@
 #include<stdlib.h>
 #include<string.h>
 //осталось только добавить лист смежности
+typedef struct Roll
+{
+    int number;
+    struct Roll *next;
+}
+roll;
 
 void MSread();
 void MIread();
+void SSread();
 void Mprint(int *, int, int);//печатает матрицу
+//void SSprint(struct roll*, int);
 void MS_to_MI(int *, int *, int);
 void MI_to_MS(int *, int *, int, int);
+int again();
+
 
 int main()
 {
@@ -27,6 +37,7 @@ int main()
             case 0 : return 0;
             case 1 : MSread(); break;
             case 2: MIread(); break;
+            //case 3 : SSread(); break;
             default:
                 printf("Неверно введенные данные, попробуйте заново\n\n");
                 break;
@@ -98,6 +109,23 @@ void MIread()
     printf("\n");
 }
 
+
+void SSread()
+{
+    int i, j, vertex;
+    roll *SS;
+    printf("Введите количество вергин: ");
+    scanf("%d",&vertex);
+    printf("Выделяем память для списка смежности!");
+    SS = (roll**)malloc(vertex*sizeof(int));
+    for(i=0; i<vertex; i++)
+    {
+        printf("Введите %d строку", i + 1);
+
+
+    }
+}
+
 void MS_to_MI(int *MS, int *MI, int vertex)
 {
     int p=0, check, i, j;
@@ -108,16 +136,16 @@ void MS_to_MI(int *MS, int *MI, int vertex)
         {
             if(*(MS+i*vertex+j)==1)
             {
-                check++;
+                if(i == j)
+                {
+                   *(MI+p*vertex+j) =2;
+                   break;
+                }
                 *(MI+p*vertex+i)= -1;
                 *(MI+p*vertex+j) =1;
                 p++;
             }
         }
-        if(check == 1)
-            {
-                *(MI+(p-1)*vertex+i) =2;
-            }
     }
 
 }
@@ -149,5 +177,9 @@ void Mprint(int *M, int vertex, int arc)
         printf("\n");
     }
 }
+/*
+void SSprint(struct roll *_list, int vertex)
+{
 
-
+}
+*/
