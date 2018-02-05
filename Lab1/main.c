@@ -1,13 +1,14 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
+
 //осталось только добавить лист смежности
-typedef struct Roll
+typedef struct Node
 {
     int number;
-    struct Roll *next;
+    struct Roll *link;
 }
-roll;
+node;
 
 void MSread();
 void MIread();
@@ -16,14 +17,16 @@ void Mprint(int *, int, int);//печатает матрицу
 //void SSprint(struct roll*, int);
 void MS_to_MI(int *, int *, int);
 void MI_to_MS(int *, int *, int, int);
-int again();
 
 
 int main()
 {
     int move;
+    printf("Внимание, данная программа является бесконечной. Для ее завершения выберите в главном меню вариант 0\n");
+    printf("Приятного использования)))\n\n");
     while(1)
     {
+        printf("\t\t\t__Главное меню__\n");
         printf("Как будем вводить матрицу:\n");
         printf("1-Матрица смежности:\n");
         printf("2-Матрица инцидентности:\n");
@@ -31,11 +34,11 @@ int main()
         printf("0-завершить программу:\n");
 
         printf("Введите число от 0 до 3:\n");
-        scanf("%d",&move);
+        scanf("%d", &move);
         switch(move)
         {
             case 0 : return 0;
-            case 1 : MSread(); break;
+            case 1 : MSread();break;
             case 2: MIread(); break;
             //case 3 : SSread(); break;
             default:
@@ -50,28 +53,29 @@ int main()
 void MSread()
 {
     int *MS, *MI, vertex, arc = 0;
-    printf("Введите кол-во вершин графа:\n");
-    scanf("%d",&vertex);
-    printf("Выведение памяти для матрицы смежности!\n");
-    MS = (int*)malloc(vertex*vertex*sizeof(int));
+    printf("Вы ввводите матрицу смежности:\n\n");
+    printf("\tВведите кол-во вершин графа: ");
+    scanf("%d", &vertex);
+    printf("\tВыделение памяти для матрицы смежности!\n");
+    MS = (int *)malloc(vertex * vertex * sizeof(int));
     for(int i=0; i<vertex; i++)
     {
-        printf("Введите %d строку: ",i+1);
+        printf("\tВведите %d строку: ", i + 1);
         for(int j=0; j<vertex; j++)
         {
-            scanf("%d",(MS+i*vertex+j));
-            if(*(MS+i*vertex+j) == 1)//нахождение дуг графа
+            scanf("%d",(MS + i * vertex + j));
+            if(*(MS + i * vertex + j) == 1)//нахождение дуг графа
                 arc++;
         }
     }
-    printf("Введенная матрица:\n");
+    printf("\tВведенная матрица:\n");
     Mprint(MS, vertex, vertex);
     printf("---------------------------------\n");
-    printf("Выведение памяти для матрицы инцидентности!\n");
-    MI = (int*)calloc(arc*vertex,sizeof(int));
+    printf("\tВыделение памяти для матрицы инцидентности!\n");
+    MI = (int *)calloc(arc*vertex,sizeof(int));
     MS_to_MI(MS, MI, vertex);
-    printf("Полученная матрица инцидентности:\n");
-    Mprint(MI,vertex,arc);
+    printf("\tПолученная матрица инцидентности:\n");
+    Mprint(MI, vertex, arc);
     free(MS);
     free(MI);
     printf("\n");
@@ -80,28 +84,28 @@ void MSread()
 // читает матрицу инцидентности
 void MIread()
 {
-    int vertex,arc;
-    int *MI,*MS;
+    int vertex, arc;
+    int *MI, *MS;
     printf("Введите кол-во дуг графа и кол-во его вершин\n");
-    scanf("%d%d",&arc,&vertex);
+    scanf("%d%d", &arc, &vertex);
     printf("Выведение памяти для матрицы инцидентности!\n");
-    MI = (int *)malloc(arc*vertex*sizeof(int));//выделение памяти для матрицы
+    MI = (int *)malloc(arc * vertex * sizeof(int));//выделение памяти для матрицы
     for(int i=0; i<arc; i++)
     {
-        printf("Введите %d строку: ",i+1);
+        printf("Введите %d строку: ",i + 1);
         for(int j=0; j<vertex; j++)
-            scanf("%d",(MI+i*vertex+j));
+            scanf("%d",(MI + i * vertex + j));
     }
     printf("\n");
     printf("Введенная матрица:\n");
-    Mprint(MI,vertex,arc);
+    Mprint(MI, vertex, arc);
 
 
     printf("Выведение памяти для матрицы смежности!\n");
-    MS = (int *)calloc(vertex*vertex,sizeof(int));
+    MS = (int *)calloc(vertex * vertex, sizeof(int));
     MI_to_MS(MI, MS, vertex, arc);
     printf("Полученная матрица смежности:\n");
-    Mprint(MS,vertex,vertex);
+    Mprint(MS, vertex, vertex);
 
     free(MI);
     free(MS);
@@ -110,21 +114,22 @@ void MIread()
 }
 
 
-void SSread()
-{
-    int i, j, vertex;
-    roll *SS;
-    printf("Введите количество вергин: ");
-    scanf("%d",&vertex);
-    printf("Выделяем память для списка смежности!");
-    SS = (roll**)malloc(vertex*sizeof(int));
-    for(i=0; i<vertex; i++)
-    {
-        printf("Введите %d строку", i + 1);
-
-
-    }
-}
+/* void SSread()
+ * {
+ *     int i, j, vertex;
+ *     roll *SS;
+ *     printf("Введите количество вергин: ");
+ *     scanf("%d", &vertex);
+ *     printf("Выделяем память для списка смежности!");
+ *     SS = (roll**)malloc(vertex*sizeof(int));
+ *     for(i=0; i<vertex; i++)
+ *     {
+ *         printf("Введите %d строку", i + 1);
+ *
+ *
+ *     }
+ * }
+ */
 
 void MS_to_MI(int *MS, int *MI, int vertex)
 {
@@ -134,15 +139,16 @@ void MS_to_MI(int *MS, int *MI, int vertex)
         check = 0;
         for(j=0; j<vertex; j++)
         {
-            if(*(MS+i*vertex+j)==1)
+            if(*(MS + i * vertex + j) == 1)
             {
                 if(i == j)
                 {
-                   *(MI+p*vertex+j) =2;
-                   break;
+                   *(MI + p * vertex + j) = 2;
+                   p++;
+                   continue;
                 }
-                *(MI+p*vertex+i)= -1;
-                *(MI+p*vertex+j) =1;
+                *(MI + p * vertex + i)= -1;
+                *(MI + p * vertex + j) = 1;
                 p++;
             }
         }
@@ -170,8 +176,10 @@ void MI_to_MS(int *MI, int *MS, int vertex, int arc)
 
 void Mprint(int *M, int vertex, int arc)
 {
+    printf("\n");
     for(int i=0; i<arc; i++)
     {
+        printf("\t\t");
         for(int j=0; j<vertex; j++)
             printf("%3d",*(M + i * vertex + j));
         printf("\n");
