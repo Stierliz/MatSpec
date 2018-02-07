@@ -6,15 +6,15 @@
 typedef struct Node
 {
     int number;
-    struct Roll *link;
-}
-node;
+    struct Node *next;
+}node;
 
 void MSread();
 void MIread();
 void SSread();
 void Mprint(int *, int, int);//печатает матрицу
-//void SSprint(struct roll*, int);
+void Insert(node *,int);
+void printNode(node *);
 void MS_to_MI(int *, int *, int);
 void MI_to_MS(int *, int *, int, int);
 
@@ -40,7 +40,7 @@ int main()
             case 0 : return 0;
             case 1 : MSread();break;
             case 2: MIread(); break;
-            //case 3 : SSread(); break;
+            case 3 : SSread(); break;
             default:
                 printf("Неверно введенные данные, попробуйте заново\n\n");
                 break;
@@ -114,29 +114,68 @@ void MIread()
 }
 
 
-/* void SSread()
- * {
- *     int i, j, vertex;
- *     roll *SS;
- *     printf("Введите количество вергин: ");
- *     scanf("%d", &vertex);
- *     printf("Выделяем память для списка смежности!");
- *     SS = (roll**)malloc(vertex*sizeof(int));
- *     for(i=0; i<vertex; i++)
- *     {
- *         printf("Введите %d строку", i + 1);
- *
- *
- *     }
- * }
- */
+void SSread()
+{
+    node *head = NULL;
+    int vertex, L_value;
+    printf("Введите количество вершин: ");
+    scanf("%d", &vertex);
+    int i = 0, j;
+    while(i<vertex)
+    {
+        printf("Введите %d строку\n",i+1);
+        j = 1;
+        while(j)
+        {
+            scanf("%d", &L_value);
+            if(L_value == 0)
+            {
+                j = 0;
+            }
+            Insert(head,L_value);
+            printNode(head);
+        }
+        i++;
+    }
+
+   // printf("Выводим список смежности:\n");
+}
+
+void Insert(node *head,int x)
+{
+        node *temp = (node *)malloc(sizeof(node));
+        temp->number = x;
+        temp->next = NULL;
+        if(head == NULL)
+            head = temp;
+        else
+        {
+            node *p = head;
+
+            while(p != NULL)
+                p = p->next;
+
+            p->next = temp;
+        }
+}
+
+void printNode(node *head)
+{
+    node *current = head;
+    printf("The List is: \n");
+    while(current != NULL)
+    {
+        printf("%d",current->number);
+        current = current->next;
+    }
+    printf("Checking\n");
+}
 
 void MS_to_MI(int *MS, int *MI, int vertex)
 {
-    int p=0, check, i, j;
+    int p=0, i, j;
     for(i=0; i<vertex; i++)
     {
-        check = 0;
         for(j=0; j<vertex; j++)
         {
             if(*(MS + i * vertex + j) == 1)
@@ -147,7 +186,7 @@ void MS_to_MI(int *MS, int *MI, int vertex)
                    p++;
                    continue;
                 }
-                *(MI + p * vertex + i)= -1;
+                *(MI + p * vertex + i) = -1;
                 *(MI + p * vertex + j) = 1;
                 p++;
             }
@@ -185,9 +224,3 @@ void Mprint(int *M, int vertex, int arc)
         printf("\n");
     }
 }
-/*
-void SSprint(struct roll *_list, int vertex)
-{
-
-}
-*/
