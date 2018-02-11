@@ -9,11 +9,13 @@ typedef struct Node
     struct Node *next;
 }node;
 
+node *head = NULL, *tail = NULL;
+
 void MSread();
 void MIread();
 void SSread();
 void Mprint(int *, int, int);//печатает матрицу
-void Insert(node *,int);
+void *Insert(int);
 void printNode(node *);
 void MS_to_MI(int *, int *, int);
 void MI_to_MS(int *, int *, int, int);
@@ -22,7 +24,8 @@ void MI_to_MS(int *, int *, int, int);
 int main()
 {
     int move;
-    printf("Внимание, данная программа является бесконечной. Для ее завершения выберите в главном меню вариант 0\n");
+    printf("Внимание, данная программа является бесконечной. ");
+    printf("Для ее завершения выберите в главном меню вариант 0\n");
     printf("Приятного использования)))\n\n");
     while(1)
     {
@@ -38,8 +41,8 @@ int main()
         switch(move)
         {
             case 0 : return 0;
-            case 1 : MSread();break;
-            case 2: MIread(); break;
+            case 1 : MSread(); break;
+            case 2 : MIread(); break;
             case 3 : SSread(); break;
             default:
                 printf("Неверно введенные данные, попробуйте заново\n\n");
@@ -113,62 +116,128 @@ void MIread()
     printf("\n");
 }
 
+// void SSread()
+// {
+//     int vertex, L_value;
+//     node **arrOfNodes;
+//     arrOfNodes = (node**)malloc(sizeof(node*));
+//     printf("Введите количество вершин: ");
+//     scanf("%d", &vertex);
+//     int i = 0, j;
+//     while(i<vertex)
+//     {
+//         printf("\nВведите %d строку\n",i+1);
+//         j = 1;
+//         while(j)
+//         {
+//             //printf("\nВведите элемент листа: ");
+//             scanf("%d", &L_value);
+//             if(L_value == 0)
+//             {
+//                 j = 0;
+//             }
+//             Insert(L_value); // сделать список не последовательным
+//         }
+//         i++;
+//     }
+// void Insert(int x) // добавить себе либо как у полякова
+// {
+//         node *temp = (node *)malloc(sizeof(node));
+//         temp->number = x;
+//         temp->next = NULL;
+//         if(head == NULL)
+//         {
+//             head = temp;
+//             tail = temp;
+//             //temp = NULL;
+//             printf("Занесено\n");
+//         }
+            
+//         else
+//         {
+//             //node *p = head;
+
+//             tail->next = temp;
+//             tail = temp;
+//             printf("Сделано\n");
+//         }
+// }
+// void printNode()
+// {
+//     node *current = head;
+//     int i = 1;
+//     printf("The List is: \n");
+//     //printf("%d : ",i);
+//     while(current != NULL)
+//     {
+//         printf("%d ",current->number);
+//         if(current->number == 0)
+//         {
+//             printf("\n");
+//             i++;
+//         }
+//         current = current->next;
+//     }
+//     //printf("Checking\n");
+// }
 
 void SSread()
 {
-    node *head = NULL;
-    int vertex, L_value;
+    int vertex, i, value;
+    node **arrOfNodes; // создаем массив узлов
+    arrOfNodes = (node**)malloc(sizeof(node*));//выделяем для него память
     printf("Введите количество вершин: ");
     scanf("%d", &vertex);
-    int i = 0, j;
-    while(i<vertex)
-    {
-        printf("Введите %d строку\n",i+1);
-        j = 1;
-        while(j)
-        {
-            scanf("%d", &L_value);
-            if(L_value == 0)
-            {
-                j = 0;
-            }
-            Insert(head,L_value);
-            printNode(head);
-        }
-        i++;
-    }
 
-   // printf("Выводим список смежности:\n");
+    for(i=0; i<vertex;)
+    {
+        printf("Введите %d строку: ", i+1);
+        while(1)
+        {
+            scanf("%d", &value);
+            *(arrOfNodes+i) = Insert(value);
+            if(value == 0)
+            {
+                i++;
+                head = NULL; // если значение листа равно 0, присваем значение,
+                break;       // чтобы создать новый список 
+            }
+        }
+    }
+    // выводит список на экран
+    for(i=0; i<vertex; i++)
+	{
+		printf("%d:", i+1);
+		printNode(*(arrOfNodes+i));
+	}
 }
 
-void Insert(node *head,int x)
+void *Insert(int x) // ставит список в конец
 {
         node *temp = (node *)malloc(sizeof(node));
         temp->number = x;
         temp->next = NULL;
-        if(head == NULL)
-            head = temp;
-        else
+        if(head == NULL) // если лист пустой ставим адресс начала(head) и конца(tail) в tmp
         {
-            node *p = head;
-
-            while(p != NULL)
-                p = p->next;
-
-            p->next = temp;
+            head = temp; // head, tail - глобальные переменные
+            tail = temp;
+        }   
+        else // если нет, ставим адресс конца в tmp
+        {
+            tail->next = temp;
+            tail = temp;
         }
+        return head; // вохвращаем head, так как оно всегда показывает на начало списка 
 }
 
-void printNode(node *head)
+void printNode(node *current)
 {
-    node *current = head;
-    printf("The List is: \n");
     while(current != NULL)
     {
-        printf("%d",current->number);
+        printf("%2d ",current->number);
         current = current->next;
     }
-    printf("Checking\n");
+    printf("\n");
 }
 
 void MS_to_MI(int *MS, int *MI, int vertex)
