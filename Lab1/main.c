@@ -7,8 +7,10 @@ typedef struct Node
     struct Node *next;
 }node;
 
-node *head, *tail = NULL;
+//объявления глобальных переменных для листов
+node *head = NULL, *tail = NULL;
 
+//основные функции
 void MSread();
 void MIread();
 void SSread();
@@ -18,12 +20,12 @@ void Mprint(int *, int, int);//печатает матрицу
 node *Insert(int);  // считывает лист
 void printNode(node *); // печатает лист
 
+//функции преобразования
 void MI_to_MS(int *, int *, int, int);
 void MS_to_SS(int*, node**, int);
 void SS_to_MI(node**, int*, int);
 
-void destroy(node*);
-
+void destroy(node*); //освобождение памяти для листов
 
 int main()
 {
@@ -33,12 +35,11 @@ int main()
     while(1)
     {
         printf("\t\t\t_-_Главное меню_-_\n");
-        printf("Как будем вводить матрицу:\n");
-        printf("1-Матрица смежности:\n");
-        printf("2-Матрица инцидентности:\n");
-        printf("3-Список смежности:\n");
-        printf("0-завершить программу:\n");
-
+        printf("Как будем вводить матрицу\n");
+        printf("1-Матрица смежности\n");
+        printf("2-Матрица инцидентности\n");
+        printf("3-Список смежности\n");
+        printf("0-завершить программу\n");
         printf("Введите число от 0 до 3: ");
         scanf("%d", &move);
         switch(move)
@@ -47,11 +48,8 @@ int main()
             case 1 : MSread(); break;
             case 2 : MIread(); break;
             case 3 : SSread(); break;
-            default:
-                printf("Неверно введенные данные, попробуйте заново\n\n");
-                break;
+            default: printf("Неверно введенные данные, попробуйте заново\n\n"); break;
         }
-
     }
     return 0;
 }
@@ -60,7 +58,7 @@ void MSread()
 {
     int *MS, *MI, vertex, arc = 0, move;
     node **arrOfNodes;
-    printf("Вы ввводите матрицу смежности:\n\n");
+    printf("Вы вводите матрицу смежности:\n\n");
     printf("\tВведите кол-во вершин графа: ");
     scanf("%d", &vertex);
     printf("\tВыделение памяти для матрицы смежности!\n");
@@ -174,7 +172,6 @@ void SSread()
 {
     int vertex, value, move, arc = 0;
     int *MS, *MI;
-    head = 0;
     node **arrOfNodes; // создаем массив узлов
     printf("Введите количество вершин: ");
     scanf("%d", &vertex);
@@ -239,7 +236,7 @@ void SSread()
     
 }
 
-node *Insert(int x) // ставит список в конец
+node *Insert(int x) // ставит узел в конец списка
 {
         node *temp = (node *)malloc(sizeof(node));
         temp->number = x;
@@ -264,7 +261,7 @@ void printNode(node *current) // печатает лист
         printf("%2d ",current->number);
         current = current->next;
     }
-    printf("\n\n");
+    printf("\n");
 }
 
 void MI_to_MS(int *MI, int *MS, int vertex, int arc)
