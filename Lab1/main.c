@@ -7,7 +7,7 @@ typedef struct Node
     struct Node *next;
 }node;
 
-//объявления глобальных переменных для листов
+//объявления глобальных переменных для листов смежности
 node *head = NULL, *tail = NULL;
 
 //основные функции
@@ -17,7 +17,7 @@ void SSread();
 
 void Mprint(int *, int, int);//печатает матрицу
 
-node *Insert(int);  // считывает лист
+node *Insert(int);  // добавляет узел в лист смежности(в конец)
 void printNode(node *); // печатает лист
 
 //функции преобразования
@@ -25,13 +25,12 @@ void MI_to_MS(int *, int *, int, int);
 void MS_to_SS(int*, node**, int);
 void SS_to_MI(node**, int*, int);
 
-void destroy(node*); //освобождение памяти для листов
+void destroy(node*); //освобождение памяти для листов смежности
 
 int main()
 {
     int move;
-    printf("Внимание, данная программа является бесконечной. ");
-    printf("Для ее завершения выберите в главном меню вариант 0\n\n");
+    printf("Внимание, данная программа является бесконечной!!!\n\n");
     while(1)
     {
         printf("\t\t\t_-_Главное меню_-_\n");
@@ -132,7 +131,6 @@ void MIread()
     printf("\n");
     printf("\tВведенная матрица:\n");
     Mprint(MI, vertex, arc);
-
     printf("\nКак будем выводить матрицу:\n");
     printf("1-Матрица смежности:\n");
     printf("2-Список смежности:\n");
@@ -176,7 +174,6 @@ void SSread()
     printf("Введите количество вершин: ");
     scanf("%d", &vertex);
     arrOfNodes = (node**)malloc(vertex * sizeof(node*));//выделяем для него память
-
     //считываем списки
     for(int i=0; i<vertex;)
     {
@@ -202,7 +199,6 @@ void SSread()
 		printf("\t\t%d:", i+1);
 		printNode(*(arrOfNodes+i));
 	}
-
     printf("\nКак будем выводить матрицу:\n");
     printf("1-Матрица смежности:\n");
     printf("2-Матрица инцидентности:\n");
@@ -233,7 +229,6 @@ void SSread()
     // освобождение памяти
     for(int i=0; i<vertex; i++) destroy(*(arrOfNodes+i));
     free(arrOfNodes);
-    
 }
 
 node *Insert(int x) // ставит узел в конец списка
