@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+//переделать
 
 typedef struct Node
 {
@@ -23,6 +24,8 @@ void printNode(node *); // печатает лист
 //функции преобразования
 void MI_to_MS(int *, int *, int, int);
 void MS_to_SS(int*, node**, int);
+void SS_to_MS(node**, int*, int);
+void MI_to_SS(int *, node**, int, int);
 void SS_to_MI(node**, int*, int);
 
 void destroy(node*); //освобождение памяти для листов смежности
@@ -55,7 +58,7 @@ int main()
 
 void MSread()
 {
-    int *MS, *MI, vertex, arc = 0, move;
+    int *MS, *MI, vertex, edge = 0, move;
     node **arrOfNodes;
     printf("Вы вводите матрицу смежности:\n\n");
     printf("\tВведите кол-во вершин графа: ");
@@ -69,7 +72,7 @@ void MSread()
         {
             scanf("%d",(MS + i * vertex + j));
             if(*(MS + i * vertex + j) == 1)//нахождение дуг графа
-                arc++;
+                edge++;
         }
     }
     printf("\tВведенная матрица:\n");
@@ -100,10 +103,10 @@ void MSread()
             arrOfNodes = (node**)malloc(vertex * sizeof(node*));
             MS_to_SS(MS, arrOfNodes, vertex);
             printf("\tВыделение памяти для матрицы инцидентности!\n");
-            MI = (int *)calloc(arc*vertex,sizeof(int));
+            MI = (int *)calloc(edge*vertex,sizeof(int));
             SS_to_MI(arrOfNodes, MI, vertex);
             printf("\tПолученная матрица инцидентности:\n");
-            Mprint(MI, vertex, arc);
+            Mprint(MI, vertex, edge);
             for(int i=0; i<vertex; i++) destroy(*(arrOfNodes + i));
             free(arrOfNodes);
             free(MI);
@@ -115,14 +118,14 @@ void MSread()
 
 void MIread()
 {
-    int vertex, arc, move;
+    int vertex, edge, move;
     int *MI, *MS;
     node **arrOfNodes;
     printf("Введите кол-во дуг графа и кол-во его вершин\n");
-    scanf("%d%d", &arc, &vertex);
+    scanf("%d%d", &edge, &vertex);
     printf("\tВыведение памяти для матрицы инцидентности!\n");
-    MI = (int *)malloc(arc * vertex * sizeof(int));//выделение памяти для матрицы
-    for(int i=0; i<arc; i++)
+    MI = (int *)malloc(edge * vertex * sizeof(int));//выделение памяти для матрицы
+    for(int i=0; i<edge; i++)
     {
         printf("\tВведите %d строку: ",i + 1);
         for(int j=0; j<vertex; j++)
@@ -130,7 +133,7 @@ void MIread()
     }
     printf("\n");
     printf("\tВведенная матрица:\n");
-    Mprint(MI, vertex, arc);
+    Mprint(MI, vertex, edge);
     printf("\nКак будем выводить матрицу:\n");
     printf("1-Матрица смежности:\n");
     printf("2-Список смежности:\n");
@@ -140,24 +143,20 @@ void MIread()
         case 1: 
             printf("Выведение памяти для матрицы смежности!\n");
             MS = (int *)calloc(vertex * vertex, sizeof(int));
-            MI_to_MS(MI, MS, vertex, arc);
+            MI_to_MS(MI, MS, vertex, edge);
             printf("Полученная матрица смежности:\n");
             Mprint(MS, vertex, vertex);   
             free(MS);
             break;
         case 2:
-            MS = (int *)calloc(vertex * vertex, sizeof(int));
-            MI_to_MS(MI, MS, vertex, arc);
-            printf("\tВыводим как список смежности!\n");
             printf("\tВыделение памяти для списка смежности\n");
             arrOfNodes = (node**)malloc(vertex * sizeof(node*));
-            MS_to_SS(MS, arrOfNodes, vertex);
+            MI_to_SS(MI, arrOfNodes, vertex, edge);
             for(int i=0; i<vertex; i++)
 	        {
 		        printf("\t%d:", i+1);
 		        printNode(*(arrOfNodes+i));
 	        }
-            free(MS);
             for(int i=0; i<vertex; i++) destroy(*(arrOfNodes+i));
             free(arrOfNodes);
             break;
@@ -168,7 +167,7 @@ void MIread()
 
 void SSread()
 {
-    int vertex, value, move, arc = 0;
+    int vertex, value, move, edge = 0;
     int *MS, *MI;
     node **arrOfNodes; // создаем массив узлов
     printf("Введите количество вершин: ");
@@ -189,7 +188,7 @@ void SSread()
                 break;       // чтобы создать новый список 
             }
             else
-                arc++; // считает количество дуг для МИ
+                edge++; // считает количество дуг для МИ
         }
     }
     // выводит список на экран
@@ -206,22 +205,18 @@ void SSread()
     switch(move)
     {
         case 1 :
-            printf("\tВыводим как матрицу смежности!\n");
-            MI = (int*)calloc(vertex * arc, sizeof(int));
-            SS_to_MI(arrOfNodes, MI, vertex);
             printf("\tВыделение памяти для матрицы смежности\n");
             MS = (int*)malloc(vertex * vertex * sizeof(int));
-            MI_to_MS(MI, MS, vertex, arc);
+            SS_to_MS(arrOfNodes, MS, vertex);
             Mprint(MS, vertex, vertex);
-            free(MI);
             free(MS);
             break;
         case 2 :
             printf("\tВыводим как матрицу инцидентности!\n");
             printf("\tВыделение памяти для матрицы инцидентности\n");
-            MI = (int*)calloc(vertex * arc, sizeof(int));
+            MI = (int*)calloc(vertex * edge, sizeof(int));
             SS_to_MI(arrOfNodes, MI, vertex);
-            Mprint(MI, vertex, arc);
+            Mprint(MI, vertex, edge);
             free(MI);
             break;
     }
@@ -258,10 +253,10 @@ void printNode(node *current) // печатает лист
     printf("\n");
 }
 
-void MI_to_MS(int *MI, int *MS, int vertex, int arc)
+void MI_to_MS(int *MI, int *MS, int vertex, int edge)
 {
     int p, d;
-    for(int i=0; i<arc; i++)
+    for(int i=0; i<edge; i++)
     {
         for(int j=0; j<vertex; j++)
         {
@@ -291,6 +286,50 @@ void MS_to_SS(int *MS, node **arrOfNodes, int vertex)
     }
 }
 
+void SS_to_MS(node **arrOfNodes, int*MS, int vertex)
+{
+    node *tmp;
+    for(int i=0; i<vertex; i++)
+    {
+        tmp = *(arrOfNodes + i);
+        for(int j=0; j<vertex; j++)
+        {
+            while(tmp->number != 0)
+            {
+                 *(MS + i * vertex + tmp->number - 1) = 1;
+                 tmp = tmp->next;
+            }
+        }
+    }
+}
+
+void MI_to_SS(int *MI, node** arrOfNodes, int vertex, int edge)
+{
+    for(int i = 0; i<vertex; )
+    {
+        head = NULL;
+        for(int j=0; j<edge; j++)
+        {
+            if(*(MI+ j * vertex + i) == -1)
+            {
+                for(int k = 0; k<vertex; k++)
+                {
+                    if(*(MI+ j * vertex + k) == 1)
+                    {
+                        *(arrOfNodes + i) = Insert(k + 1);
+                    }
+                }
+            }
+            else if(*(MI+ j * vertex + i) == 2)
+            {
+                *(arrOfNodes + i) = Insert(i + 1);
+            }
+        }
+        *(arrOfNodes + i) = Insert(0);
+        i++;
+    }
+}
+
 void SS_to_MI(node **arrOfNodes, int *MI, int vertex)
 {
     node *tmp;
@@ -299,7 +338,7 @@ void SS_to_MI(node **arrOfNodes, int *MI, int vertex)
     for(int i = 0; i<vertex; i++)
         {
             tmp = *(arrOfNodes + i);
-            while(tmp != NULL && tmp->number != 0)
+            while(tmp->number != 0)
             {
                 j = tmp->number;
                 if(j-1 == i)
@@ -315,10 +354,10 @@ void SS_to_MI(node **arrOfNodes, int *MI, int vertex)
         }
 }
 
-void Mprint(int *M, int vertex, int arc)
+void Mprint(int *M, int vertex, int edge)
 {
     printf("\n");
-    for(int i=0; i<arc; i++)
+    for(int i=0; i<edge; i++)
     {
         printf("\t\t");
         for(int j=0; j<vertex; j++)
