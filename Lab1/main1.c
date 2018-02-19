@@ -1,6 +1,5 @@
 #include<stdio.h>
 #include<stdlib.h>
-//переделать
 
 typedef struct Node
 {
@@ -22,7 +21,6 @@ node *Insert(int);  // добавляет узел в лист смежност�
 void printNode(node *); // печатает лист
 
 //функции преобразования
-void MI_to_MS(int *, int *, int, int);
 void MS_to_SS(int*, node**, int);
 void SS_to_MS(node**, int*, int);
 void MI_to_SS(int *, node**, int, int);
@@ -141,11 +139,15 @@ void MIread()
     switch(move)
     {
         case 1: 
+            arrOfNodes = (node**)malloc(vertex * sizeof(node*));
+            MI_to_SS(MI, arrOfNodes, vertex, edge);
             printf("Выведение памяти для матрицы смежности!\n");
             MS = (int *)calloc(vertex * vertex, sizeof(int));
-            MI_to_MS(MI, MS, vertex, edge);
+            SS_to_MS(arrOfNodes, MS, vertex);
             printf("Полученная матрица смежности:\n");
-            Mprint(MS, vertex, vertex);   
+            Mprint(MS, vertex, vertex);  
+            for(int i=0; i<vertex; i++) destroy(*(arrOfNodes+i));
+            free(arrOfNodes); 
             free(MS);
             break;
         case 2:
@@ -183,7 +185,7 @@ void SSread()
             *(arrOfNodes+i) = Insert(value);
             if(value == 0)
             {
-                i++;
+                i++; //переходим на новую строку для создания нового листа
                 head = NULL; // если значение листа равно 0, присваем значение NULL,
                 break;       // чтобы создать новый список 
             }
@@ -251,24 +253,6 @@ void printNode(node *current) // печатает лист
         current = current->next;
     }
     printf("\n");
-}
-
-void MI_to_MS(int *MI, int *MS, int vertex, int edge)
-{
-    int p, d;
-    for(int i=0; i<edge; i++)
-    {
-        for(int j=0; j<vertex; j++)
-        {
-            if(*(MI + i * vertex + j) == -1)
-                p = j;
-            else if(*(MI + i * vertex + j) == 1)
-                d = j;
-            else if(*(MI + i * vertex + j) == 2)
-                p = d = j;
-        }
-        *(MS + p * vertex + d) = 1;
-    }
 }
 
 void MS_to_SS(int *MS, node **arrOfNodes, int vertex)
