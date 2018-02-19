@@ -356,7 +356,7 @@ void destroy(node *arrOfNodes)
    while(arrOfNodes)
 	{
 		tmp=arrOfNodes;
-        arrOfNodes=arrOfNodes->next;
+        	arrOfNodes=arrOfNodes->next;
 		free(tmp);
 	}
 }
